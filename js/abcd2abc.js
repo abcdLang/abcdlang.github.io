@@ -143,7 +143,7 @@ export async function abcd2abc(abcdString) {
     const score = abcd2Score(abcdLines);
     score.scoreMetaData = scorePreambule;
 
-    //score.preprocessing();
+    score.preprocessing();
 
     return score.toStringABC();
 }

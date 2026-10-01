@@ -1,6 +1,8 @@
 // @ts-check
 
-import { abcdStringTimeSignature, abcdStringClefs, isStartsWithClefs, instrumentToMIDITable, utf8DynamicSymbols, utf8NavigationSymbols } from "./abcddefinitions.js";
+import { regularExpressionBars, abcdStringTimeSignature, abcdStringClefs, isStartsWithClefs, instrumentToMIDITable, utf8DynamicSymbols, utf8NavigationSymbols, strToTonalityNumber, isTimeSignature } from "./abcddefinitions.js";
+import { RhythmGuess } from "./rhythmguess.js";
+import { ElementSignature, tokenToElement, ElementTempo } from "./element.js";
 
 
 /**
@@ -268,8 +270,144 @@ export class Score {
     }
 
 
-}
 
+    preprocessing() {
+        this.applyMacros();
+        this.guessRhythm();
+    }
+
+
+
+    applyMacros() {
+
+
+        /**
+         * 
+         * @param {string} measure 
+         */
+        function removeNewLineClefsEtc(measure) {
+            measure = measure.replaceAll("\n", "");
+            const elementsStr = measure.split(" ");
+            while (elementsStr.length > 0) {
+                console.log("truc : " + elementsStr[0])
+                if (elementsStr[0] == "")
+                    elementsStr.shift();
+                if (elementsStr[0] == "\n")
+                    elementsStr.shift();
+                else if (isStartsWithClefs(elementsStr[0]))
+                    elementsStr.shift();
+                else if (strToTonalityNumber(elementsStr[0]) != undefined)
+                    elementsStr.shift();
+                else if (isTimeSignature(elementsStr[0]))
+                    elementsStr.shift();
+                else if (ElementTempo.getABCFromTokenABCDTempo(elementsStr[0]))
+                    elementsStr.shift();
+                else break;
+            }
+            return elementsStr.join(" ");
+        }
+
+        /**
+         * 
+         * @param {string[]} measuresAndBars 
+         * @param {string} macro 
+         * @param {number} i 
+         * @param {number} iprec 
+         * @returns 
+         */
+        function macroPercentReplaceMeasure(measuresAndBars, macro, i, iprec) {
+            const safeMacro = macro.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const regex = new RegExp(`${safeMacro}\\s*`, "g");
+            if (measuresAndBars[i].indexOf(macro) >= 0) {
+                measuresAndBars[i] = measuresAndBars[i].replaceAll(regex,
+                    removeNewLineClefsEtc(measuresAndBars[iprec]));
+                return true;
+            }
+            return false;
+        }
+
+        /**
+        * 
+        * @param {string[]} measuresAndBars 
+        * @param {RegExp} regex 
+        * @param {number} i 
+        * @param {function} func 
+        * @returns 
+        */
+        function macroWithRegExReplace(measuresAndBars, regex, i, func) {
+            measuresAndBars[i] = measuresAndBars[i].replaceAll(regex, func);
+        }
+
+
+        for (const staff of this.staffs) {
+            for (const voice of staff.voices) {
+                const text = voice.data;
+                const measuresAndBars = text.split(regularExpressionBars);
+
+                for (let i = 0; i < measuresAndBars.length; i += 2) {
+                    macroWithRegExReplace(measuresAndBars, /%-(\d+)\s*/g, i,
+                        (match, n) => {
+                            const num = Number(n);
+                            return removeNewLineClefsEtc(measuresAndBars[i - 2 * num]);
+                        });
+                    macroWithRegExReplace(measuresAndBars, /%(\d+)\s*/g, i,
+                        (match, n) => {
+                            const num = Number(n);
+                            return removeNewLineClefsEtc(measuresAndBars[2 * (num - 1)]);
+                        });
+                    macroWithRegExReplace(measuresAndBars, /%\s*/g, i, () => removeNewLineClefsEtc(measuresAndBars[i - 2]));
+
+                   
+                }
+                voice.data = measuresAndBars.join("");
+                console.log(voice.data)
+            }
+        }
+    }
+
+
+
+    guessRhythm() {
+        let currentTimeSignature = "4/4"; //default value
+        for (const staff of this.staffs) {
+            for (const voice of staff.voices) {
+                voice.data = voice.data
+                    .split("\n")
+                    .map((line) => {
+                        const measuresStr = line.split("|");
+                        const measuresResultsStr =
+                            measuresStr
+                                .map((measureStr) => {
+                                    if (measureStr == "") // DO NOT REMOVE. It enables to handle "||"
+                                        return "";
+
+                                    if (measureStr.trim() == "%") // TO BE REMOVED
+                                        return " % ";
+                                    /**
+                                     * 
+                                     * @param {*} measureStr
+                                     * @description read in advance the signature for eventually update currentTimeSignature before the full 
+                                     */
+                                    function readSignature(measureStr) {
+                                        for (const element of measureStr.split(" ").map(tokenToElement))
+                                            if (element instanceof ElementSignature)
+                                                currentTimeSignature = element.tokenStr;
+                                    }
+
+                                    readSignature(measureStr);
+
+                                    const measureOutputStr = RhythmGuess.getRhythm(measureStr, currentTimeSignature);
+                                    console.log(measureOutputStr)
+                                    return measureOutputStr;
+                                });
+                        return measuresResultsStr.join("|");
+                    })
+                    .join("\n");
+                console.log(voice.data)
+            }
+        }
+    }
+}
 
 
 

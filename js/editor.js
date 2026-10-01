@@ -248,7 +248,10 @@ export class Editor {
             effects: clearHighlightEffect.of()
         });
         this.view.dispatch({
-            effects: addHighlightEffect.of({ from: this.getPositionFromLineCol(iline, icolStart), to: this.getPositionFromLineCol(iline, icolEnd) })
+            effects: [addHighlightEffect.of({ from: this.getPositionFromLineCol(iline, icolStart), to: this.getPositionFromLineCol(iline, icolEnd) }),
+            EditorView.scrollIntoView(this.getPositionFromLineCol(iline, icolStart), { y: "center" })
+            ],
+            scrollIntoView: true,
         });
     }
 

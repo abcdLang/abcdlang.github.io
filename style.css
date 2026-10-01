@@ -40,14 +40,15 @@ label {
 
 
 .cm-custom-highlight-current-measure {
-    background-color: rgba(255, 230, 0, 0.2);
+    background-color: rgba(255, 230, 0, 0.4);
     border-bottom: 2px solid #e6b800;
+    border-top: 2px solid #e6b800;
     border-radius: 2px;
 }
 
 
 .scoreHighlightZone {
-    fill: rgba(255, 230, 0, 0.2);
+    fill: rgba(255, 230, 0, 0.4);
     stroke-width: 0px;
 
 }

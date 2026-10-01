@@ -388,6 +388,8 @@ export const utf8BarSymbols = [
 
 
 
+export const regularExpressionBars = /(:\|\|:|:\|:|\|:\||\|:|:\||\|\||\|\]|\|)/;
+
 export const abcdStringTimeSignature = ["1/2", "1/4", "2/2", "2/4", "3/4", "5/4", "7/4", "3/8", "4/4", "6/4", "6/8", "12/8", "15/8"];
 
 /**
@@ -396,6 +398,14 @@ export const abcdStringTimeSignature = ["1/2", "1/4", "2/2", "2/4", "3/4", "5/4"
  * @returns {boolean}
  */
 export function isTimeSignature(str) { return abcdStringTimeSignature.indexOf(str) >= 0; }
+
+
+
+/**
+ * @param {string} str
+ * @returns {boolean}
+ */
+export function isBar(str) { return ['|', '||', '|:', ':|:', ':||:', '|]'].indexOf(str) >= 0; }
 
 /**
  * 

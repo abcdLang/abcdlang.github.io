@@ -333,6 +333,7 @@ export class ScoreHighlighter {
 
         // 4. Ajouter le rectangle dans le SVG
         svg.appendChild(rect);
+        rect.scrollIntoView({ behavior: 'smooth', block: 'center', inline: "nearest" });
     }
 
     static noHighlightZone() {

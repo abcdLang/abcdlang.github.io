@@ -28,14 +28,14 @@ export class RhythmGuess {
      * 
      * @param {string} abcdStr 
      * @param {string} signature 
-     * @returns {Promise<string>} the abcd string where the durations of the notes have been infered
+     * @returns {string} the abcd string where the durations of the notes have been infered
      */
-    static async getRhythm(abcdStr, signature = "4/4") {
+    static getRhythm(abcdStr, signature = "4/4") {
         abcdStr = abcdStr.trimLeft();
         if (memo[signature + abcdStr])
             return memo[signature + abcdStr];
 
-        return await RhythmGuess.inferRhythm(abcdStr, signature);
+        return RhythmGuess.inferRhythm(abcdStr, signature);
     }
 
 
@@ -43,10 +43,10 @@ export class RhythmGuess {
      * 
      * @param {string} abcdStr, a string representing the content of a voice of a measure
      * @param {string} signature, a string representing the duration of the measure, e.g. 4/4 = a whole note
-     * @returns {Promise<string>} a string where each element (note or rest) has a duration
+     * @returns {string} a string where each element (note or rest) has a duration
      * @description if the string does not contain any note/rest/chord, then it adds a "x" with its duration at the end
      */
-    static async inferRhythm(abcdStr, signature) {
+    static inferRhythm(abcdStr, signature) {
         const signatureValue = eval(signature);
         console.log(`inferRhythm(${abcdStr}, ${signature})`)
 
@@ -220,7 +220,7 @@ export class RhythmGuess {
             if (possibleDurations.every((durs) => durs.length == 1))
                 durationsSolution = possibleDurations.map((durs) => durs[0]);
             else
-                durationsSolution = await solve(possibleDurations, signatureValue, elements.map((e) => e.dhat));
+                durationsSolution = solve(possibleDurations, signatureValue, elements.map((e) => e.dhat));
             setDurations(elements, durationsSolution);
             const abcResult = elementsToABC(elements, durationsSolution);
             console.log("result of the inference: ", durationsSolution, abcResult)
@@ -334,29 +334,6 @@ const solve =
     solveQuickAndDirty;
 
 
-/**
- * 
- * @param {*} possibleDurations 
- * @param {*} totalDuration 
- * @param {*} dhats 
- * @returns array of durations, or 0 if no solution
- * @description it calls the LP solver in Python (server side)
- */
-async function solveWithLP(possibleDurations, totalDuration, dhats) {
-    var url = '/your/url';
-    var formData = new FormData();
-    const strJSON = JSON.stringify({ dhats, possibleDurations, signature: totalDuration });
-    formData.append('input', JSON.stringify({ dhats, possibleDurations, signature: totalDuration }));
-
-    const f = await fetch("./guessRhythm/guessRhythm.php", { method: 'POST', body: formData });
-    const txt = await f.text();
-    const lines = txt.split("\n");
-    const array = JSON.parse(lines[lines.length - 2]);
-
-    if (array == "0")
-        throw "no solution"
-    return array;
-}
 
 
 
@@ -366,12 +343,12 @@ async function solveWithLP(possibleDurations, totalDuration, dhats) {
  * @param {number} totalDuration 
  * @param {number[]} dhats: a list of duration ratios (the sum of these numbers equals 1), these numbers are just used to prune the search tree
 
- * @returns {Promise<number[]>} returns an array "solutions" of durations such that:
+ * @returns {number[]} returns an array "solutions" of durations such that:
  *  - the solutions[i] is in possibleDurations[i]
  *  - solutions[0] + solutions[1] + ... sums to totalDuration
  *  - solutions comply with dhats (same ratios => same duration etc.)
  */
-async function solveQuickAndDirty(possibleDurations, totalDuration, dhats) {
+function solveQuickAndDirty(possibleDurations, totalDuration, dhats) {
 
     const timeOut = Date.now() + 100;
     /**

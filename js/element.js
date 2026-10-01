@@ -1,7 +1,7 @@
 // @ts-check
 import { Duration } from "./duration.js";
 import { Pitch } from "./pitch.js";
-import { isTimeSignature, clefsDictionnary, strToTonalityNumber, utf8AccidentalSymbols, utf8RestSymbols } from "./abcddefinitions.js";
+import { isBar, isTimeSignature, clefsDictionnary, strToTonalityNumber, utf8AccidentalSymbols, utf8RestSymbols } from "./abcddefinitions.js";
 
 
 export class MusicalElement {
@@ -87,6 +87,9 @@ export class ElementSignature extends MusicalElement {
 
 
 
+
+
+
 export class ElementClef extends MusicalElement {
     /**
      * 
@@ -109,7 +112,7 @@ export class ElementClef extends MusicalElement {
 
 
 
-class ElementTempo extends MusicalElement {
+export class ElementTempo extends MusicalElement {
     /**
      * 
      * @param {string} tokenStr 
@@ -218,13 +221,25 @@ export class NupletSymbolElement extends MusicalElement {
 /**
  * class for any element (which is not a note or a rest)
  */
-class StringElement extends MusicalElement {
+export class StringElement extends MusicalElement {
     /**
      * 
      * @param {string} string 
      */
     constructor(string) { super(); this.string = string; }
     toStringABC() { return this.string; }
+}
+
+
+
+
+export class ElementBar extends StringElement {
+    /**
+     * 
+     * @param {string} tokenStr 
+     * @example new ElementBar("|")
+     */
+    constructor(tokenStr) { super(tokenStr); }
 }
 
 
@@ -236,6 +251,9 @@ class StringElement extends MusicalElement {
 export function tokenToElement(tokenStr) {
     if (tokenStr == "")
         return new StringElement(tokenStr);
+
+    if (isBar(tokenStr))
+        return new ElementBar(tokenStr);
 
     if (isTimeSignature(tokenStr))
         return new ElementSignature(tokenStr);
