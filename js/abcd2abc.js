@@ -140,8 +140,10 @@ function extractScorePreambuleFromABCDLines(abcdLines) {
 export async function abcd2abc(abcdString) {
     const abcdLines = abcdString.split("\n");
     const scorePreambule = extractScorePreambuleFromABCDLines(abcdLines);
-    const score = await abcd2Score(abcdLines);
+    const score = abcd2Score(abcdLines);
     score.scoreMetaData = scorePreambule;
+
+    //score.preprocessing();
 
     return score.toStringABC();
 }
@@ -153,9 +155,9 @@ export async function abcd2abc(abcdString) {
 /**
  * 
  * @param {string[]} abcdLines 
- * @returns {Promise<Score>}
+ * @returns {Score}
  */
-async function abcd2Score(abcdLines) {
+function abcd2Score(abcdLines) {
     const score = new Score();
     const cursor = new Cursor();
     let currentInstrument = undefined;
@@ -191,51 +193,8 @@ async function abcd2Score(abcdLines) {
                     currentInstrument = infoVoice.instrument;
             }
 
-            let measuresABCDStr = line.split("|");
-            let currentTimeSignature = score.getLastTimeSignature(cursor);
-            if (currentTimeSignature == undefined)
-                currentTimeSignature = "4/4";
 
-            measuresABCDStr = await Promise.all(measuresABCDStr.map(async (measureStr) => {
-                if (measureStr == "") // DO NOT REMOVE. It enables to handle "||"
-                    return "";
-
-                if (measureStr.trim() == "%")
-                    return " % ";
-
-                let timeSignatureRead = undefined;
-
-
-                /**
-                 * 
-                 * @param {*} measureStr
-                 * @description read in advance the signature for eventually update currentTimeSignature before the full 
-                 */
-                function readSignature(measureStr) {
-                    for (const element of measureStr.split(" ").map(tokenToElement))
-                        if (element instanceof ElementSignature)
-                            currentTimeSignature = element.tokenStr;
-                }
-
-                readSignature(measureStr);
-
-                const measureOutputStr = (await RhythmGuess.getRhythm(measureStr, currentTimeSignature));
-
-                if (timeSignatureRead != undefined)
-                    currentTimeSignature = timeSignatureRead;
-
-                console.log(measureOutputStr)
-                return measureOutputStr;
-            }));
-
-
-
-            for (let i = 0; i < measuresABCDStr.length; i++)
-                if (measuresABCDStr[i].trim() == "%")
-                    measuresABCDStr[i] = measuresABCDStr[i - 1];
-
-            let s = measuresABCDStr.join("|");
-            score.appendVoice(cursor, s, infoVoice);
+            score.appendVoice(cursor, line, infoVoice);
 
         }
     } //endfor
