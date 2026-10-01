@@ -50,7 +50,7 @@ function getInfoStaffLine(abcdLine) {
  * isStaffInstrumentAndOpenCurlyBracket('piano {') returns {instrument: "piano"}
  * isStaffInstrumentAndOpenCurlyBracket('flute 𝄞 a a a |') returns false
  */
-function isStaffInstrumentAndOpenCurlyBracket(abcdLine) {
+export function isStaffInstrumentAndOpenCurlyBracket(abcdLine) {
     const words = abcdLine.split(" ");
     const firstWord = words[0].toLowerCase();
     const content = words.splice(1).join(" ").trim();
@@ -67,7 +67,7 @@ function isStaffInstrumentAndOpenCurlyBracket(abcdLine) {
  * @param {string} abcdLine 
  * @returns {string|false}
  */
-function isLyricsLine(abcdLine) {
+export function isLyricsLine(abcdLine) {
     if (abcdLine.startsWith("💬"))
         return abcdLine.substr(2);
     return false;

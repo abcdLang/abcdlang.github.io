@@ -1,11 +1,12 @@
 // @ts-check
 
 import { EditorView, basicSetup } from "https://esm.sh/codemirror@6.0.1";
-import { EditorState, EditorSelection } from "https://esm.sh/@codemirror/state";
+import { Decoration } from "https://esm.sh/@codemirror/view";
+import { EditorState, EditorSelection, StateField, StateEffect } from "https://esm.sh/@codemirror/state";
 import { StreamLanguage, HighlightStyle, syntaxHighlighting } from "https://esm.sh/@codemirror/language@6.0.0";
 import { tags as t, Tag } from "https://esm.sh/@lezer/highlight@1.0.0";
 import { abcdStringClefs } from "./abcddefinitions.js";
-
+import { getMusicalPosition, ScoreHighlighter } from "./matchingCodeRendering.js";
 
 /**
  * Tags for color highlighting
@@ -16,7 +17,37 @@ const barTag = Tag.define();
 const alterationTag = Tag.define();
 
 
+const addHighlightEffect = StateEffect.define();
+const clearHighlightEffect = StateEffect.define();
 
+// 2. Définir le style visuel
+const highlightDecoration = Decoration.mark({
+    class: "cm-custom-highlight-current-measure"
+});
+
+// 3. Créer un StateField pour gérer l'état des décorations
+export const highlightField = StateField.define({
+    create() {
+        return Decoration.none;
+    },
+    update(highlights, tr) {
+        // Mettre à jour les positions si le document change (insertion/suppression de texte)
+        highlights = highlights.map(tr.changes);
+
+        for (let e of tr.effects) {
+            if (e.is(addHighlightEffect)) {
+                // e.value contient { from, to }
+                highlights = highlights.update({
+                    add: [highlightDecoration.range(e.value.from, e.value.to)]
+                });
+            } else if (e.is(clearHighlightEffect)) {
+                highlights = Decoration.none;
+            }
+        }
+        return highlights;
+    },
+    provide: f => EditorView.decorations.from(f)
+});
 
 /**
  * define the parser for the tags
@@ -59,6 +90,38 @@ const abcdHighlightStyle = HighlightStyle.define([
 
 
 
+
+
+
+const EventHandlerMoveInDocument = EditorView.domEventHandlers({
+    // Fires on standard mouse click
+    click(event, view) {
+        const { iline, icolumn } = editor.getCursor();
+        const lines = editor.text.split("\n");
+        const line = lines[iline - 1];
+
+        let colEnd = line.indexOf("|", icolumn + 1);
+        let colStart = line.lastIndexOf("|", icolumn);
+
+        if (colEnd == -1)
+            colEnd = line.length - 1;
+
+        console.log({ iline, colStart, colEnd });
+
+        if (colStart < colEnd)
+            editor.highlightZone(iline, colStart, colEnd);
+
+
+        const musicalPosition = getMusicalPosition(iline, icolumn);
+        console.log(musicalPosition)
+        ScoreHighlighter.scoreHighlightZone(musicalPosition);
+    },
+
+    keyup(event, view) {
+
+    }
+});
+
 /**
  * A wrapper class for the text editor where the code is written 
  */
@@ -76,7 +139,9 @@ export class Editor {
             basicSetup,
             abcdGrammar,
             onUpdate,
-            syntaxHighlighting(abcdHighlightStyle)
+            syntaxHighlighting(abcdHighlightStyle),
+            highlightField,
+            EventHandlerMoveInDocument
         ];
 
         this.view = new EditorView({
@@ -169,6 +234,33 @@ export class Editor {
     }
 
 
+
+    getPositionFromLineCol(iline, icol) {
+        const lineInfo = this.view.state.doc.line(iline);
+        return lineInfo.from + Math.min(icol, lineInfo.length);
+    }
+
+    /**
+     * 
+     * @param {number} iline 
+     * @param {number} icolStart 
+     * @param {number} icolEnd 
+     */
+    highlightZone(iline, icolStart, icolEnd) {
+        this.view.dispatch({
+            effects: clearHighlightEffect.of()
+        });
+        this.view.dispatch({
+            effects: addHighlightEffect.of({ from: this.getPositionFromLineCol(iline, icolStart), to: this.getPositionFromLineCol(iline, icolEnd) })
+        });
+    }
+
+
+    noHightlightZone() {
+        this.view.dispatch({
+            effects: clearHighlightEffect.of()
+        });
+    }
     /**
      * 
      * @returns {{iline: number, icolumn: number, ipos: number}}
