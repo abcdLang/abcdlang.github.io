@@ -91,35 +91,32 @@ const abcdHighlightStyle = HighlightStyle.define([
 
 
 
+function updateHighlightZone() {
+    const { iline, icolumn } = editor.getCursor();
+    const lines = editor.text.split("\n");
+    const line = lines[iline - 1];
 
+    let colEnd = line.indexOf("|", icolumn + 1);
+    let colStart = line.lastIndexOf("|", icolumn);
+
+    if (colEnd == -1)
+        colEnd = line.length - 1;
+
+    console.log({ iline, colStart, colEnd });
+
+    if (colStart < colEnd)
+        editor.highlightZone(iline, colStart, colEnd);
+
+
+    const musicalPosition = getMusicalPosition(iline, icolumn);
+    console.log(musicalPosition)
+    ScoreHighlighter.scoreHighlightZone(musicalPosition);
+}
 
 const EventHandlerMoveInDocument = EditorView.domEventHandlers({
     // Fires on standard mouse click
-    click(event, view) {
-        const { iline, icolumn } = editor.getCursor();
-        const lines = editor.text.split("\n");
-        const line = lines[iline - 1];
-
-        let colEnd = line.indexOf("|", icolumn + 1);
-        let colStart = line.lastIndexOf("|", icolumn);
-
-        if (colEnd == -1)
-            colEnd = line.length - 1;
-
-        console.log({ iline, colStart, colEnd });
-
-        if (colStart < colEnd)
-            editor.highlightZone(iline, colStart, colEnd);
-
-
-        const musicalPosition = getMusicalPosition(iline, icolumn);
-        console.log(musicalPosition)
-        ScoreHighlighter.scoreHighlightZone(musicalPosition);
-    },
-
-    keyup(event, view) {
-
-    }
+    click(event, view) { updateHighlightZone(); },
+    keyup(event, view) { updateHighlightZone(); },
 });
 
 /**

@@ -200,7 +200,11 @@ async function abcd2Score(abcdLines) {
                 if (measureStr == "") // DO NOT REMOVE. It enables to handle "||"
                     return "";
 
+                if (measureStr.trim() == "%")
+                    return " % ";
+
                 let timeSignatureRead = undefined;
+
 
                 /**
                  * 
@@ -223,6 +227,12 @@ async function abcd2Score(abcdLines) {
                 console.log(measureOutputStr)
                 return measureOutputStr;
             }));
+
+
+
+            for (let i = 0; i < measuresABCDStr.length; i++)
+                if (measuresABCDStr[i].trim() == "%")
+                    measuresABCDStr[i] = measuresABCDStr[i - 1];
 
             let s = measuresABCDStr.join("|");
             score.appendVoice(cursor, s, infoVoice);

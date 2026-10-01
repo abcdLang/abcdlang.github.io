@@ -59,15 +59,18 @@ export class SVGScore {
         const barEnd = bars[musicalInformation.imeasure];
 
         let x1 = barStart ? barStart.getBoundingClientRect().x : 0;
-        let x2 = barEnd.getBoundingClientRect().x;
+        let x2 = barEnd ? barEnd.getBoundingClientRect().x : SVGSystem.getBoundingClientRect().width;
 
         x1 -= SVGSystem.getBoundingClientRect().x;
         x2 -= SVGSystem.getBoundingClientRect().x;
 
+        let y1 = barEnd ? barEnd.getBoundingClientRect().top : SVGSystem.getBoundingClientRect().top;
+        let y2 = barEnd ? barEnd.getBoundingClientRect().bottom : SVGSystem.getBoundingClientRect().bottom;
+
         return {
             x1, x2,
-            y1: barEnd.getBoundingClientRect().top - SVGSystem.getBoundingClientRect().top,
-            y2: barEnd.getBoundingClientRect().bottom - SVGSystem.getBoundingClientRect().top
+            y1: y1 - SVGSystem.getBoundingClientRect().top,
+            y2: y2 - SVGSystem.getBoundingClientRect().top
         }
     }
 

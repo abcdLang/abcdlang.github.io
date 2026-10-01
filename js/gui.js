@@ -23,7 +23,7 @@ const abcjs = window.ABCJS;
  */
 dialogOpenButtonOpen.onclick = () => {
     dialogOpen.close();
-    newid = selectFilename.value;
+    const newid = selectFilename.value;
     if (newid != null) {
         if (Save.exists(newid)) {
             Save.setId(newid);
