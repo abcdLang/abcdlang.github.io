@@ -193,7 +193,6 @@ function abcd2Score(abcdLines) {
                     currentInstrument = infoVoice.instrument;
             }
 
-
             score.appendVoice(cursor, line, infoVoice);
 
         }
