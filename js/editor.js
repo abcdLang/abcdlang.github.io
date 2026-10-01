@@ -16,6 +16,8 @@ const barTag = Tag.define();
 const alterationTag = Tag.define();
 
 
+
+
 /**
  * define the parser for the tags
  */
@@ -74,7 +76,7 @@ export class Editor {
             basicSetup,
             abcdGrammar,
             onUpdate,
-            syntaxHighlighting(abcdHighlightStyle),
+            syntaxHighlighting(abcdHighlightStyle)
         ];
 
         this.view = new EditorView({
