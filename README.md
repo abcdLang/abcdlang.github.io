@@ -14,6 +14,7 @@ The ABCD language enables to write scores with:
 - lyrics
 - guess the rhythm
 - ties, slurs, dynamics etc. (actually almost all the features from the language ABC)
+- macros for copying last measure, or last last measures etc.
 
 This repository also comes with an **music score editor** with real-time update of the score while modifying the ABCD code (like HedgeDoc for editing markdown) and enables to:
 - listen to the audio (MIDI)
@@ -21,11 +22,17 @@ This repository also comes with an **music score editor** with real-time update 
 - Load/save in the local storage of the browser
 - Input from a MIDI device (in Chrome only) 
 - Export in MIDI and ABC formats
+- Synchronisation between the code and the score
 
 <img src="https://github.com/user-attachments/assets/16215691-cbf2-41f8-b299-81037da43a00" height="600px"/>
 
 On the top of the screen, the user can write the score in code. The output is automatically updated at the bottom of the screen.
 Try it here: https://francoisschwarzentruber.github.io/abcd/
+
+
+# Screenshots
+
+<img width="1541" height="825" alt="image" src="https://github.com/user-attachments/assets/68bbc2cb-c329-41aa-a894-5039f9abd3f7" />
 
 
 # Videos
@@ -59,6 +66,8 @@ The syntax is highly inspired from ABC and Lilypond.
 | Lyrics       |  start a line with 💬 | 
 | specify an instrument | start the line with the name of an instrument (e.g. `piano`, `flute`, `violin`, `cello`) |
 | Change tempo   | write `♩=120`   |
+| Copy the last measure | write `%` |
+| Copy the n-th last measure | write `%-n`, e.g. `%-3` |
 
 
 
@@ -81,7 +90,7 @@ produces the score
 In wysiwyg software, like Musescore, Finale, etc. you need to have a high knowledge about the graphical user interface. We found easier to only have to focus on having knowledge about a language. Also it does not mean that a simple graphical user interface exists for the most common features (adding a note, etc.).
 
 ## Why textual languages?
-The only thing to learn with a textual language is the language itself. Everyone knows how to use a text editor. Existing textual langages (like ABC and lilypond) are very expressive. 
+The only thing to learn with a textual language is the language itself. Everyone knows how to use a text editor. Existing textual languages (like ABC and lilypond) are very expressive. 
 
 ## Why a new textual language?
 Existing languages are somehow difficult to learn. The project aims at providing an easier to use textual language. Here are the main points:
