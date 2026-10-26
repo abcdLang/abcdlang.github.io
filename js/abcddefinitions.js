@@ -15,6 +15,7 @@ export const instrumentToMIDITable = {
   "xylophone": 14,
   "guitar": 25,
   "violin": 41,
+  "violon": 41,
   "viola": 42,
   "cello": 43,
   "contrabass": 44,
@@ -31,7 +32,9 @@ export const instrumentToMIDITable = {
   "ocarina": 80,
   "bass": 54,
   "soprano": 53,
-  "tenor": 53
+  "tenor": 53,
+  "basse": 54,
+  "alto": 53
 }
 
 

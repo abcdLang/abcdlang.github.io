@@ -164,6 +164,9 @@ function abcd2Score(abcdLines) {
     for (let i = 0; i < abcdLines.length; i++) {
         let lyricsStr = undefined;
         let line = abcdLines[i].trim();
+        if(line == "%%end")
+            break;
+
         if (line == "") {
             score.validateStaff(cursor);
             cursor.reset();

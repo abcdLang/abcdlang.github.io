@@ -2,7 +2,7 @@
 
 import { editor } from "./editor.js";
 import { performActionOnSelection } from "./gui.js";
-import { addPitch, mapToAllTokens, str8down, str8up } from "./harmony.js";
+import { addPitch, mapToAllTokens, onlyKeepLowestNote, onlyKeepUppestNote, str8down, str8up } from "./harmony.js";
 
 
 
@@ -22,12 +22,12 @@ ninja.data = [
     {
         title: 'Add notes one octave up',
         icon: "+8↑",
-        handler: () => performActionOnSelection(abcdString => mapToAllTokens(abcdString, (str) => addPitch(str, 7)))
+        handler: () => performActionOnSelection(abcdString => mapToAllTokens(abcdString, (strToken) => addPitch(strToken, 7)))
     },
     {
         title: 'Add notes one octave down',
         icon: "+8↓",
-        handler: () => performActionOnSelection(abcdString => mapToAllTokens(abcdString, (str) => addPitch(str, -7)))
+        handler: () => performActionOnSelection(abcdString => mapToAllTokens(abcdString, (strToken) => addPitch(strToken, -7)))
     },
 
     {
@@ -43,7 +43,17 @@ ninja.data = [
         parent: "dynamics",
         title: `Add dynamics ${dynamicsStr}`,
         handler: () => { editor.write(`!${dynamicsStr}!`) }
-    }))
+    })),
+    {
+        title: "Only keep lowest notes",
+        icon: "",
+        handler: () => performActionOnSelection(abcdString => mapToAllTokens(abcdString, (strToken) => onlyKeepLowestNote(strToken)))
+    },
+    {
+        title: "Only keep uppest notes",
+        icon: "",
+        handler: () => performActionOnSelection(abcdString => mapToAllTokens(abcdString, (strToken) => onlyKeepUppestNote(strToken)))
+    },
 ];
 
 [

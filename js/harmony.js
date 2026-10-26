@@ -56,6 +56,38 @@ export function addPitch(abcdTokenString, diff) {
     return element.toStringABCD();
 }
 
+/**
+ * 
+ * @param {string} abcdTokenString 
+ * @returns the string
+ */
+export function onlyKeepLowestNote(abcdTokenString) {
+    const element = tokenToElement(abcdTokenString);
+
+    if (!(element instanceof Chord))
+        return abcdTokenString;
+
+    const newPitchs = element.pitchs;
+    
+    return new Chord([newPitchs[0]], element.duration).toStringABCD();
+}
+
+
+/**
+ * 
+ * @param {string} abcdTokenString 
+ * @returns the string
+ */
+export function onlyKeepUppestNote(abcdTokenString) {
+    const element = tokenToElement(abcdTokenString);
+
+    if (!(element instanceof Chord))
+        return abcdTokenString;
+
+    const newPitchs = element.pitchs;
+    
+    return new Chord([newPitchs[newPitchs.length-1]], element.duration).toStringABCD();
+}
 
 /**
  * 

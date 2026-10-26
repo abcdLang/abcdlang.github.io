@@ -550,7 +550,7 @@ class Voice extends StringToBeAppended {
             return string
 
         }
-        return `V:V${this.voiceNumber}\n`
+        return `V:V${this.voiceNumber}`
             + this.instrumentToABC()
             + `[V:V${this.voiceNumber}]`
             + this.data.split("\n").map((line) => {
@@ -563,10 +563,11 @@ class Voice extends StringToBeAppended {
 
 
     instrumentToABC() {
+        const nameStr = this.instrument ? ` name="${this.instrument}" ` : "";
         if (this.instrument && instrumentToMIDITable[this.instrument] != undefined)
-            return "%%MIDI program " + instrumentToMIDITable[this.instrument] + "\n";
+            return nameStr + "\n%%MIDI program " + instrumentToMIDITable[this.instrument] + "\n";
         else
-            return "";
+            return nameStr + "\n";
     }
 }
 
