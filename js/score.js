@@ -374,6 +374,9 @@ export class Score {
                 voice.data = voice.data
                     .split("\n")
                     .map((line) => {
+                        if(line.startsWith("w:")) // lyrics stay the same
+                            return line;
+                            
                         const measuresStr = line.split("|");
                         const measuresResultsStr =
                             measuresStr
@@ -547,7 +550,7 @@ class Voice extends StringToBeAppended {
 
             string = string.replaceAll(/(?<=\S) /g, ""); //remove a space after a letter different from a space
 
-            return string
+            return string;
 
         }
         return `V:V${this.voiceNumber}`

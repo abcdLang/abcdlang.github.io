@@ -40,9 +40,9 @@ label {
 
 
 .cm-custom-highlight-current-measure {
-    background-color: rgba(255, 230, 0, 0.4);
-    border-bottom: 2px solid #e6b800;
-    border-top: 2px solid #e6b800;
+    background-color: rgba(255, 230, 0, 0.2);
+    border-bottom: 2px solid #e6b80088;
+    border-top: 2px solid #e6b80088;
     border-radius: 2px;
 }
 
