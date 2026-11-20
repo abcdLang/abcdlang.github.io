@@ -3,12 +3,28 @@ import { isStaffInstrumentAndOpenCurlyBracket, isLyricsLine } from "./abcd2abc.j
 import { isStartsWithClefs } from "./abcddefinitions.js";
 
 export class SVGScore {
+    /**
+     * 
+     * @param {number} isystem 
+     * @returns the SVG element of the system
+     */
     static getSVGSystem(isystem) {
         const renderedSystems = document.getElementById("output").children;
         return renderedSystems[isystem];
     }
 
+    /**
+     * 
+     * @param {SVGElement} el 
+     * @returns true iff that element is a staff
+     */
     static isElementStaff(el) { return el.querySelector(".abcjs-top-line"); }
+
+    /**
+     * 
+     * @param {SVGElement} el 
+     * @returns true iff it is measure bar
+     */
     static isElementBar(el) { return el.dataset.name == "bar" };
 
     static getSVGStaffAndBars(musicalInformation) {
@@ -208,7 +224,7 @@ function systemNumberFromLineNumber(lines, iline) {
  * 
  * @param {*} iline 
  * @param {*} icol 
- * @returns {isystem, istaff, imeasure}
+ * @returns {isystem, istaff, imeasure} the system number, the staff number and the measure number at line iline and icol in the ABCD code
  */
 export function getMusicalPosition(iline, icol) {
     const lines = editor.text.split("\n");
@@ -255,7 +271,11 @@ function highlightZone(musicalPosition) {
 
 
 
-
+/**
+ * 
+ * @param {*} musicalPosition 
+ * @returns { iline, colStart, colEnd } the position in the code corresponding to the musicalPosition
+ */
 function editorGetPositionInCode(musicalPosition) {
     const lines = editor.text.split("\n");
     const ilineBeginningSystem = systemNumberToLineNumber(lines, musicalPosition.isystem);
@@ -263,7 +283,7 @@ function editorGetPositionInCode(musicalPosition) {
     console.log(musicalPosition)
 
     if (ilineBeginningSystem == undefined)
-        throw "musical system not found"
+        throw "musical system not found";
 
     let iline = ilineBeginningSystem;
 

@@ -51,6 +51,12 @@ export const clefsDictionnary = {
   "[K:bass-8]": "[K:bass-8]",
   "[K:treble+8]": "[K:treble+8]",
   "[K:bass+8]": "[K:bass+8]",
+  "𝄞8": "[K:treble-8]",
+  "g8:": "[K:treble-8]",
+  "𝄞-8": "[K:treble-8]",
+  "g-8:": "[K:treble-8]",
+  "𝄞+8": "[K:treble+8]",
+  "g+8:": "[K:treble+8]",
   "𝄢": "[K:bass]",
   "𝄣": "[K:bass+8]",
   "𝄤": "[K:bass-8]",
@@ -60,12 +66,6 @@ export const clefsDictionnary = {
   "𝄟": "[K:treble+8]",
   "𝄠": "[K:treble-8]",
   "g:": "[K:treble]",
-  "𝄞8": "[K:treble-8]",
-  "g8:": "[K:treble-8]",
-  "𝄞-8": "[K:treble-8]",
-  "g-8:": "[K:treble-8]",
-  "𝄞+8": "[K:treble+8]",
-  "g+8:": "[K:treble+8]",
 }
 
 

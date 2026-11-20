@@ -1,6 +1,6 @@
 // @ts-check
 import { ScoreMetaData, Score, Cursor } from "./score.js";
-import { isStartsWithClefs, instrumentToMIDITable, instrumentToStandardKey } from "./abcddefinitions.js";
+import { isStartsWithClefs, instrumentToMIDITable, instrumentToStandardKey, clefsDictionnary } from "./abcddefinitions.js";
 import { ElementSignature, tokenToElement } from "./element.js";
 import { RhythmGuess } from "./rhythmguess.js";
 
@@ -164,7 +164,7 @@ function abcd2Score(abcdLines) {
     for (let i = 0; i < abcdLines.length; i++) {
         let lyricsStr = undefined;
         let line = abcdLines[i].trim();
-        if(line == "%%end")
+        if (line == "%%end")
             break;
 
         if (line == "") {
@@ -186,6 +186,14 @@ function abcd2Score(abcdLines) {
         }
         else {
             let infoVoice = {};
+
+            /**
+             * separate e.g. "𝄞♯"
+             */
+            for (const clefSymbol in clefsDictionnary)
+                for (const accidental of ["#", "♯", "♭", "b"])
+                    line = line.replaceAll(clefSymbol + accidental, clefSymbol + " " + accidental);
+
 
             if (getInfoStaffLine(line)) {
                 score.validateStaff(cursor);
